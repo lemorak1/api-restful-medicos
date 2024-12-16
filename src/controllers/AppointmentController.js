@@ -198,14 +198,15 @@ exports.processPayment = async (req, res) => {
       return res.status(403).json({ message: 'No tienes permiso para pagar esta cita' });
     }
 
-    // Crear un intento de pago en Stripe
+    // Crear un intento de pago en Stripe con redirecciones deshabilitadas
     const paymentIntent = await stripe.paymentIntents.create({
       amount, // Monto en centavos
       currency: 'usd', // Moneda predeterminada
-      payment_method: paymentMethodId,
-      confirm: true, // Confirmar automáticamente el pago
+      payment_method: paymentMethodId, // ID del método de pago recibido desde el cliente
+      confirm: true, // Confirma automáticamente el pago
       automatic_payment_methods: {
-        enabled: true, // Aceptar solo métodos automáticos
+        enabled: true, // Activa métodos automáticos
+        allow_redirects: 'never', // Deshabilita métodos con redirección
       },
     });
 
