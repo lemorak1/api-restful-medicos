@@ -198,12 +198,15 @@ if (new Date(date) < new Date()) {
       }
   
       // Crear un intento de pago en Stripe
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount, // Monto en centavos
-        currency: 'usd', // Moneda predeterminada
-        payment_method: paymentMethodId,
-        confirm: true,
-      });
+    const paymentIntent = await stripe.paymentIntents.create({
+    amount, // Monto en centavos
+    currency: 'usd', // Moneda predeterminada
+    payment_method: paymentMethodId,
+    confirm: true,
+    automatic_payment_methods: {
+        enabled: true, // Activa métodos de pago automáticos
+      },
+    });
   
       // Actualizar los detalles de pago en la cita
       appointment.status = 'Pagada';
