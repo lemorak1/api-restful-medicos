@@ -91,7 +91,8 @@ Reemplaza `<username>` y `<password>` con tus credenciales de MongoDB.
   ```json
   {
     "username": "test_user",
-    "password": "password123"
+    "password": "password123",
+    "role": "patient"
   }
   ```
 
@@ -193,3 +194,7 @@ Si deseas contribuir:
 3. Realiza tus cambios y envía un pull request.
 
 ---
+
+## Licencia
+
+Este proyecto está bajo la licencia **MIT**.
