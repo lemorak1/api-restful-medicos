@@ -109,143 +109,178 @@ Todos los endpoints de la API están documentados en detalle en Swagger. Puedes 
 `http://localhost:3000/api-docs`. Aquí se encuentran las descripciones completas de los parámetros requeridos y las respuestas esperadas.
 
 A continuación, se listan los endpoints principales con ejemplos de uso. Algunos endpoints requieren autenticación mediante un token JWT, el cual debe configurarse como un **Bearer Token** en el encabezado de la solicitud.
+## **Uso**
 
-#### **Autenticación**
+### **Endpoints Principales**
 
-1. **Registro:** `POST /auth/register`
-   - Permite registrar nuevos usuarios como pacientes o médicos.
-   - **Cuerpo de la solicitud:**
-     ```json
-     {
-       "name": "test_user",
-       "email":"test_user@test.com",
-       "password": "password123",
-       "role": "Paciente" // o "Médico"
-     }
-     ```
-   - **Respuesta esperada:**
-     ```json
-     {
-       "message": "Usuario registrado exitosamente"
-     }
-     ```
+Todos los endpoints están documentados en Swagger (`http://localhost:3000/api-docs`). Aquí se describen los principales:
 
-2. **Inicio de sesión:** `POST /auth/login`
-   - Permite a un usuario obtener un token JWT.
-   - **Cuerpo de la solicitud:**
-     ```json
-     {
-       "email": "test_user@test.com",
-       "password": "password123"
-     }
-     ```
-   - **Respuesta esperada:**
-     ```json
-     {
-       "token": "<jwt_token>"
-     }
-     ```
-   - **Notas:** Este token deberá incluirse (medioco o paciente) en las solicitudes a los endpoints protegidos como un **Bearer Token** en los encabezados:
-     ```
-     Authorization: Bearer <jwt_token>
-     ```
+---
 
-#### **Citas**
+### **1. Registro de Usuarios**
 
-1. **Crear cita:** `POST /appointments/create`
-   - Permite a un paciente crear una cita médica.
-   - **Requiere token JWT**.
-   - **Cuerpo de la solicitud:**
-     ```json
-     {
-      "patient":"67607a9bd5d303fd4d8af2df",
-      "doctor":"67607e9dd5d303fd4d8af2e5" ,
-      "date": "2024-12-16T10:00:00",
-      "time":"07:00" 
-     }
-     ```
-   - **Respuesta esperada:**
-     ```json
-     {
-       "message": "Cita creada exitosamente",
-        "appointment": 
-          {
-          "patient": <paciente_id>,
-          "doctor": <doctor_id>,
-          "date": "2024-12-16T10:00:00.000Z",
-          "time": "07:00",
-          "status": "Pendiente",
-          "_id": <id_appointment>, //id_cita generado
-          }
-     }
-     ```
+- **Paciente:**
+  - **Endpoint:** `POST /auth/register`
+  - **Body:**
+    ```json
+    {
+      "name": "paciente_prueba",
+      "email": "paciente_prueba@example.com",
+      "password": "password123",
+      "role": "patient"
+    }
+    ```
 
-2. **Pagar cita:** `POST /appointments/pay/:id`
-   - Permite a un paciente pagar una cita utilizando Stripe.
-   - **Requiere token JWT**.
-   - **Parámetros de ruta:**
-     - `id`: ID de la cita a pagar.
-   - **Respuesta esperada:**
-     ```json
-     {
-       "message": "Cita pagada exitosamente",
-       "appointment": {
-         "id": "appointment123",
-         "status": "paid"
-       }
-     }
-     ```
+- **Médico:**
+  - **Endpoint:** `POST /auth/register`
+  - **Body:**
+    ```json
+    {
+      "name": "medico_prueba",
+      "email": "medico_prueba@example.com",
+      "password": "password123",
+      "role": "doctor"
+    }
+    ```
 
-3. **Confirmar cita:** `POST /appointments/confirm/:id`
-   - Permite a un médico confirmar una cita que ya fue pagada.
-   - **Requiere token JWT**.
-   - **Parámetros de ruta:**
-     - `id`: ID de la cita a confirmar.
-   - **Respuesta esperada:**
-     ```json
-     {
-       "message": "Cita confirmada exitosamente",
-       "appointment": {
-         "id": "appointment123",
-         "status": "confirmed"
-       }
-     }
-     ```
+---
 
-4. **Listar citas del día:** `GET /appointments/list`
-   - Permite a un médico listar todas las citas programadas para el día actual.
-   - **Requiere token JWT**.
-   - **Respuesta esperada:**
-     ```json
-     {
-       "appointments": [
-         {
-           "id": "appointment123",
-           "date": "2024-12-20T10:00:00",
-           "status": "confirmed",
-           "patientId": "patient456"
-         }
-       ]
-     }
-     ```
+### **2. Inicio de Sesión**
 
-5. **Historial de citas:** `GET /appointments/history`
-   - Permite a un paciente consultar su historial de citas.
-   - **Requiere token JWT**.
-   - **Respuesta esperada:**
-     ```json
-     {
-       "appointments": [
-         {
-           "id": "appointment123",
-           "date": "2024-12-20T10:00:00",
-           "status": "confirmed",
-           "doctorId": "doctor123"
-         }
-       ]
-     }
-     ```
+- **Endpoint:** `POST /auth/login`
+- **Body:**
+  ```json
+  {
+    "email": "<email>",
+    "password": "<contraseña>"
+  }
+  ```
+- **Respuesta:**
+  ```json
+  {
+    "token": "<jwt_token>"
+  }
+  ```
 
+---
+
+### **3. Creación de Citas**
+
+- **Endpoint:** `POST /appointments/create`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_paciente>"
+  }
+  ```
+- **Body:**
+  ```json
+  {
+    "doctor": "<doctor_id>",
+    "patient": "<patient_id>",
+    "date": "2024-12-20",
+    "time": "10:00"
+  }
+  ```
+- **Respuesta:**
+  ```json
+  {
+    "message": "Cita creada exitosamente",
+    "appointment": {
+      "id": "<appointment_id>",
+      "doctor": "<doctor_id>",
+      "patient": "<patient_id>",
+      "date": "2024-12-20",
+      "time": "10:00",
+      "price": 5000,
+      "status": "Pendiente"
+    }
+  }
+  ```
+
+---
+
+### **4. Pago de Citas**
+
+- **Endpoint:** `POST /appointments/pay/<appointment_id>`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_paciente>"
+  }
+  ```
+- **Body:**
+  ```json
+  {
+    "amount": 5000,
+    "paymentMethodId": "pm_card_visa"
+  }
+  ```
+- **Respuesta:**
+  ```json
+  {
+    "message": "Pago exitoso",
+    "appointment": {
+      "id": "<appointment_id>",
+      "status": "Pagada",
+      "paymentDetails": {
+        "paymentIntentId": "<payment_intent_id>",
+        "amount": 5000,
+        "currency": "usd"
+      }
+    }
+  }
+  ```
+
+---
+
+### **5. Confirmación de Citas**
+
+- **Endpoint:** `POST /appointments/confirm/<appointment_id>`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_medico>"
+  }
+  ```
+- **Respuesta:**
+  ```json
+  {
+    "message": "Cita confirmada exitosamente",
+    "appointment": {
+      "id": "<appointment_id>",
+      "status": "Confirmada"
+    }
+  }
+  ```
+
+---
+
+### **6. Listado de Citas del Día**
+
+- **Endpoint:** `GET /appointments/list`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_medico>"
+  }
+  ```
+- **Respuesta:**
+  ```json
+  [
+    {
+      "id": "<appointment_id>",
+      "date": "2024-12-20",
+      "time": "10:00",
+      "status": "Confirmada",
+      "patient": {
+        "id": "<patient_id>",
+        "name": "paciente_prueba",
+        "email": "paciente_prueba@example.com"
+      }
+    }
+  ]
+  ```
 ---
 
 ## Pruebas
