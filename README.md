@@ -117,9 +117,10 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
    - **Cuerpo de la solicitud:**
      ```json
      {
-       "username": "test_user",
+       "name": "test_user",
+       "email":"test_user@test.com",
        "password": "password123",
-       "role": "patient" // o "doctor"
+       "role": "Paciente" // o "Médico"
      }
      ```
    - **Respuesta esperada:**
@@ -134,7 +135,7 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
    - **Cuerpo de la solicitud:**
      ```json
      {
-       "username": "test_user",
+       "email": "test_user@test.com",
        "password": "password123"
      }
      ```
@@ -144,7 +145,7 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
        "token": "<jwt_token>"
      }
      ```
-   - **Notas:** Este token deberá incluirse en las solicitudes a los endpoints protegidos como un **Bearer Token** en los encabezados:
+   - **Notas:** Este token deberá incluirse (medioco o paciente) en las solicitudes a los endpoints protegidos como un **Bearer Token** en los encabezados:
      ```
      Authorization: Bearer <jwt_token>
      ```
@@ -157,20 +158,25 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
    - **Cuerpo de la solicitud:**
      ```json
      {
-       "date": "2024-12-20T10:00:00",
-       "doctorId": "doctor123",
-       "patientId": "patient456"
+      "patient":"67607a9bd5d303fd4d8af2df",
+      "doctor":"67607e9dd5d303fd4d8af2e5" ,
+      "date": "2024-12-16T10:00:00",
+      "time":"07:00" 
      }
      ```
    - **Respuesta esperada:**
      ```json
      {
        "message": "Cita creada exitosamente",
-       "appointment": {
-         "id": "appointment123",
-         "date": "2024-12-20T10:00:00",
-         "status": "pending"
-       }
+        "appointment": 
+          {
+          "patient": <paciente_id>,
+          "doctor": <doctor_id>,
+          "date": "2024-12-16T10:00:00.000Z",
+          "time": "07:00",
+          "status": "Pendiente",
+          "_id": <id_appointment>, //id_cita generado
+          }
      }
      ```
 
