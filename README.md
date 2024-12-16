@@ -111,12 +111,7 @@ Todos los endpoints de la API están documentados en detalle en Swagger. Puedes 
 A continuación, se listan los endpoints principales con ejemplos de uso. Algunos endpoints requieren autenticación mediante un token JWT, el cual debe configurarse como un **Bearer Token** en el encabezado de la solicitud.
 ## **Uso**
 
-### **Endpoints Principales**
-
-Todos los endpoints están documentados en Swagger (`http://localhost:3000/api-docs`). Aquí se describen los principales:
-
 ---
-
 ### **1. Registro de Usuarios**
 
 - **Paciente:**
@@ -182,27 +177,16 @@ Todos los endpoints están documentados en Swagger (`http://localhost:3000/api-d
     "time": "10:00"
   }
   ```
-- **Respuesta:**
-  ```json
-  {
-    "message": "Cita creada exitosamente",
-    "appointment": {
-      "id": "<appointment_id>",
-      "doctor": "<doctor_id>",
-      "patient": "<patient_id>",
-      "date": "2024-12-20",
-      "time": "10:00",
-      "price": 5000,
-      "status": "Pendiente"
-    }
-  }
-  ```
+- **Restricciones:**
+  - Solo horarios permitidos: `07:00` a `18:00`.
+  - No se permiten fechas pasadas.
+  - No se puede crear una cita si el horario está ocupado.
 
 ---
 
 ### **4. Pago de Citas**
 
-- **Endpoint:** `POST /appointments/pay/<appointment_id>`
+- **Endpoint:** `POST /appointments/pay/:id`
 - **Headers:**
   ```json
   {
@@ -216,33 +200,24 @@ Todos los endpoints están documentados en Swagger (`http://localhost:3000/api-d
     "paymentMethodId": "pm_card_visa"
   }
   ```
-- **Respuesta:**
-  ```json
-  {
-    "message": "Pago exitoso",
-    "appointment": {
-      "id": "<appointment_id>",
-      "status": "Pagada",
-      "paymentDetails": {
-        "paymentIntentId": "<payment_intent_id>",
-        "amount": 5000,
-        "currency": "usd"
-      }
-    }
-  }
-  ```
+- **Restricciones:**
+  - `amount` es obligatorio y debe ser mayor a 0.
+  - La cita debe existir y estar asociada al paciente autenticado.
 
 ---
 
 ### **5. Confirmación de Citas**
 
-- **Endpoint:** `POST /appointments/confirm/<appointment_id>`
+- **Endpoint:** `POST /appointments/confirm/:id`
 - **Headers:**
   ```json
   {
     "Authorization": "Bearer <jwt_token_medico>"
   }
   ```
+- **Restricciones:**
+  - Solo el médico asociado a la cita puede confirmarla.
+  - La cita debe estar en estado `Pagada`.
 - **Respuesta:**
   ```json
   {
@@ -265,6 +240,8 @@ Todos los endpoints están documentados en Swagger (`http://localhost:3000/api-d
     "Authorization": "Bearer <jwt_token_medico>"
   }
   ```
+- **Restricciones:**
+  - Solo el médico autenticado puede consultar sus citas.
 - **Respuesta:**
   ```json
   [
@@ -280,6 +257,56 @@ Todos los endpoints están documentados en Swagger (`http://localhost:3000/api-d
       }
     }
   ]
+  ```
+
+---
+
+### **7. Historial de Citas**
+
+#### **Paciente:**
+- **Endpoint:** `GET /appointments/history`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_paciente>"
+  }
+  ```
+
+#### **Médico:**
+- **Endpoint:** `GET /appointments/list`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_medico>"
+  }
+  ```
+- **Restricciones:**
+  - El paciente solo puede ver citas asociadas a su ID.
+  - El médico solo puede ver citas del día actual asociadas a su ID.
+
+---
+
+### **8. Cancelación de Citas**
+
+- **Endpoint:** `DELETE /appointments/cancel/:id`
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_paciente_o_medico>"
+  }
+  ```
+- **Restricciones:**
+  - No se pueden cancelar citas con estado `Confirmada`.
+  - No se pueden cancelar citas con fechas pasadas.
+- **Respuesta:**
+  ```json
+  {
+    "message": "Cita cancelada exitosamente",
+    "appointment": {
+      "id": "<appointment_id>",
+      "status": "Cancelada"
+    }
+  }
   ```
 ---
 
