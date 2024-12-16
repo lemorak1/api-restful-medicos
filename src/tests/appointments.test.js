@@ -153,7 +153,7 @@ require('dotenv').config();
 beforeAll(async () => {
   console.log('Cadena de conexión:', process.env.TEST_DB_URI); // Verifica la URI
   try {
-    await mongoose.connect(process.env.TEST_DB_URI);
+    mongoose.connect(process.env.TEST_DB_URI);
     console.log('Conexión exitosa con MongoDB');
   } catch (error) {
     console.error('Error al conectar con MongoDB:', error);
