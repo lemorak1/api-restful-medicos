@@ -84,45 +84,162 @@ Reemplaza `<username>` y `<password>` con tus credenciales de MongoDB.
 
 ## Uso
 
-### Endpoints principales
+### **Endpoints principales**
 
-#### **Autenticación:**
-- **Registro**: `POST /auth/register`
-  ```json
-  {
-    "username": "test_user",
-    "password": "password123",
-    "role": "patient"
-  }
-  ```
+Todos los endpoints de la API están documentados en detalle en Swagger. Puedes acceder a la documentación interactiva en:
+`http://localhost:3000/api-docs`. Aquí se encuentran las descripciones completas de los parámetros requeridos y las respuestas esperadas.
 
-- **Inicio de sesión**: `POST /auth/login`
-  ```json
-  {
-    "username": "test_user",
-    "password": "password123"
-  }
-  ```
+A continuación, se listan los endpoints principales con ejemplos de uso. Algunos endpoints requieren autenticación mediante un token JWT, el cual debe configurarse como un **Bearer Token** en el encabezado de la solicitud.
 
-#### **Citas:**
-- **Crear cita**: `POST /appointments/create`
-  ```json
-  {
-    "date": "2024-12-20T10:00:00",
-    "doctorId": "doctor123",
-    "patientId": "patient456"
-  }
-  ```
+---
 
-- **Pagar cita**: `POST /appointments/pay/:id`
+#### **Autenticación**
 
-- **Confirmar cita**: `POST /appointments/confirm/:id`
+1. **Registro:** `POST /auth/register`
+   - Permite registrar nuevos usuarios como pacientes o médicos.
+   - **Cuerpo de la solicitud:**
+     ```json
+     {
+       "username": "test_user",
+       "password": "password123",
+       "role": "patient" // o "doctor"
+     }
+     ```
+   - **Respuesta esperada:**
+     ```json
+     {
+       "message": "Usuario registrado exitosamente"
+     }
+     ```
 
-- **Listar citas del día (Médico)**: `GET /appointments/list`
+2. **Inicio de sesión:** `POST /auth/login`
+   - Permite a un usuario obtener un token JWT.
+   - **Cuerpo de la solicitud:**
+     ```json
+     {
+       "username": "test_user",
+       "password": "password123"
+     }
+     ```
+   - **Respuesta esperada:**
+     ```json
+     {
+       "token": "<jwt_token>"
+     }
+     ```
+   - **Notas:** Este token deberá incluirse en las solicitudes a los endpoints protegidos como un **Bearer Token** en los encabezados:
+     ```
+     Authorization: Bearer <jwt_token>
+     ```
 
-- **Historial de citas (Paciente)**: `GET /appointments/history`
+---
 
-- **Cancelar cita**: `DELETE /appointments/cancel/:id`
+#### **Citas**
+
+1. **Crear cita:** `POST /appointments/create`
+   - Permite a un paciente crear una cita médica.
+   - **Requiere token JWT**.
+   - **Cuerpo de la solicitud:**
+     ```json
+     {
+       "date": "2024-12-20T10:00:00",
+       "doctorId": "doctor123",
+       "patientId": "patient456"
+     }
+     ```
+   - **Respuesta esperada:**
+     ```json
+     {
+       "message": "Cita creada exitosamente",
+       "appointment": {
+         "id": "appointment123",
+         "date": "2024-12-20T10:00:00",
+         "status": "pending"
+       }
+     }
+     ```
+
+2. **Pagar cita:** `POST /appointments/pay/:id`
+   - Permite a un paciente pagar una cita y confirmar su asistencia.
+   - **Requiere token JWT**.
+   - **Parámetros de ruta:**
+     - `id`: ID de la cita a pagar.
+   - **Respuesta esperada:**
+     ```json
+     {
+       "message": "Cita pagada exitosamente",
+       "appointment": {
+         "id": "appointment123",
+         "status": "paid"
+       }
+     }
+     ```
+
+3. **Confirmar cita:** `POST /appointments/confirm/:id`
+   - Permite a un médico confirmar una cita que ya fue pagada.
+   - **Requiere token JWT**.
+   - **Parámetros de ruta:**
+     - `id`: ID de la cita a confirmar.
+   - **Respuesta esperada:**
+     ```json
+     {
+       "message": "Cita confirmada exitosamente",
+       "appointment": {
+         "id": "appointment123",
+         "status": "confirmed"
+       }
+     }
+     ```
+
+4. **Listar citas del día:** `GET /appointments/list`
+   - Permite a un médico listar todas las citas programadas para el día actual.
+   - **Requiere token JWT**.
+   - **Respuesta esperada:**
+     ```json
+     {
+       "appointments": [
+         {
+           "id": "appointment123",
+           "date": "2024-12-20T10:00:00",
+           "status": "confirmed",
+           "patientId": "patient456"
+         }
+       ]
+     }
+     ```
+
+5. **Historial de citas:** `GET /appointments/history`
+   - Permite a un paciente consultar su historial de citas.
+   - **Requiere token JWT**.
+   - **Respuesta esperada:**
+     ```json
+     {
+       "appointments": [
+         {
+           "id": "appointment123",
+           "date": "2024-12-20T10:00:00",
+           "status": "confirmed",
+           "doctorId": "doctor123"
+         }
+       ]
+     }
+     ```
+
+6. **Cancelar cita:** `DELETE /appointments/cancel/:id`
+   - Permite a un usuario cancelar una cita programada.
+   - **Requiere token JWT**.
+   - **Parámetros de ruta:**
+     - `id`: ID de la cita a cancelar.
+   - **Respuesta esperada:**
+     ```json
+     {
+       "message": "Cita cancelada exitosamente",
+       "appointment": {
+         "id": "appointment123",
+         "status": "cancelled"
+       }
+     }
+     
 
 ---
 
