@@ -176,50 +176,50 @@ if (new Date(date) < new Date()) {
       res.status(500).json({ message: 'Error al obtener el historial de citas', error });
     }
   };
-  exports.processPayment = async (req, res) => {
-    const { id } = req.params;
-    const { amount, paymentMethodId } = req.body;
-  
-    try {
-      // Verificar que el campo amount esté presente y sea válido
-      if (!amount || typeof amount !== 'number' || amount <= 0) {
-        return res.status(400).json({ message: 'El monto (amount) es obligatorio y debe ser un número positivo' });
-      }
-  
-      // Verificar que la cita existe
-      const appointment = await Appointment.findById(id);
-      if (!appointment) {
-        return res.status(404).json({ message: 'Cita no encontrada' });
-      }
-  
-      // Verificar que la cita pertenece al paciente autenticado
-      if (appointment.patient.toString() !== req.user.id) {
-        return res.status(403).json({ message: 'No tienes permiso para pagar esta cita' });
-      }
-  
-      // Crear un intento de pago en Stripe
+
+exports.processPayment = async (req, res) => {
+  const { id } = req.params;
+  const { amount, paymentMethodId } = req.body;
+
+  try {
+    // Validar el monto
+    if (!amount || typeof amount !== 'number' || amount <= 0) {
+      return res.status(400).json({ message: 'El monto (amount) es obligatorio y debe ser un número positivo' });
+    }
+
+    // Verificar que la cita existe
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    // Verificar que la cita pertenece al paciente autenticado
+    if (appointment.patient.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'No tienes permiso para pagar esta cita' });
+    }
+
+    // Crear un intento de pago en Stripe
     const paymentIntent = await stripe.paymentIntents.create({
-    amount, // Monto en centavos
-    currency: 'usd', // Moneda predeterminada
-    payment_method: paymentMethodId,
-    confirm: true,
-    automatic_payment_methods: {
-        enabled: true, // Activa métodos de pago automáticos
+      amount, // Monto en centavos
+      currency: 'usd', // Moneda predeterminada
+      payment_method: paymentMethodId,
+      confirm: true, // Confirmar automáticamente el pago
+      automatic_payment_methods: {
+        enabled: true, // Aceptar solo métodos automáticos
       },
     });
-  
-      // Actualizar los detalles de pago en la cita
-      appointment.status = 'Pagada';
-      appointment.paymentDetails = {
-        paymentIntentId: paymentIntent.id,
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-      };
-      await appointment.save();
-  
-      res.status(200).json({ message: 'Pago exitoso', appointment });
-    } catch (error) {
-      res.status(400).json({ message: 'Error en el pago', error: error.message });
-    }
-  };
-  
+
+    // Actualizar los detalles de pago en la cita
+    appointment.status = 'Pagada';
+    appointment.paymentDetails = {
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+    };
+    await appointment.save();
+
+    res.status(200).json({ message: 'Pago exitoso', appointment });
+  } catch (error) {
+    res.status(400).json({ message: 'Error en el pago', error: error.message });
+  }
+};
