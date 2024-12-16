@@ -9,6 +9,7 @@ Esta API permite gestionar citas médicas entre pacientes y médicos, proporcion
 - Listado de citas del día para médicos.
 - Historial de citas para pacientes.
 - Protección mediante autenticación y validación de roles.
+- Procesamiento de pagos utilizando Stripe.
 
 ---
 
@@ -36,11 +37,13 @@ Esta API permite gestionar citas médicas entre pacientes y médicos, proporcion
 ### Tecnológicos:
 - **Node.js**: Versión >= 14.x
 - **MongoDB**: Servicio local o remoto.
+- **Stripe**: Cuenta activa para procesamiento de pagos.
 
 ### Dependencias principales:
 - **express**: Para la creación del servidor.
 - **mongoose**: Para la conexión con MongoDB.
 - **jsonwebtoken**: Para la autenticación JWT.
+- **stripe**: Para el procesamiento de pagos.
 - **swagger-ui-express**: Para la documentación interactiva.
 - **jest** y **supertest**: Para las pruebas.
 
@@ -54,28 +57,33 @@ Antes de ejecutar la aplicación, asegúrate de configurar las variables de ento
 DB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/medical_appointments
 TEST_DB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/medical_appointments_test
 JWT_SECRET=your_secret_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
 PORT=3000
 ```
 
-Reemplaza `<username>` y `<password>` con tus credenciales de MongoDB.
+Reemplaza `<username>`, `<password>` y `your_stripe_secret_key` con tus credenciales de MongoDB y Stripe.
 
 ---
 
 ## Instalación
 
 1. Clona el repositorio:
+
    ```bash
    git clone https://github.com/lemorak1/api-restful-medicos.git
    cd api-restful-medicos
    ```
 
 2. Instala las dependencias:
+
    ```bash
    npm install
    ```
 
 3. Inicializa la base de datos:
+
    - Ejecuta el script de inicialización de la base de datos:
+
      ```bash
      node scripts/initializeDatabase.js
      ```
@@ -84,14 +92,12 @@ Reemplaza `<username>` y `<password>` con tus credenciales de MongoDB.
 
 ## Uso
 
-### **Endpoints principales**
+### Endpoints principales
 
 Todos los endpoints de la API están documentados en detalle en Swagger. Puedes acceder a la documentación interactiva en:
 `http://localhost:3000/api-docs`. Aquí se encuentran las descripciones completas de los parámetros requeridos y las respuestas esperadas.
 
 A continuación, se listan los endpoints principales con ejemplos de uso. Algunos endpoints requieren autenticación mediante un token JWT, el cual debe configurarse como un **Bearer Token** en el encabezado de la solicitud.
-
----
 
 #### **Autenticación**
 
@@ -132,8 +138,6 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
      Authorization: Bearer <jwt_token>
      ```
 
----
-
 #### **Citas**
 
 1. **Crear cita:** `POST /appointments/create`
@@ -160,7 +164,7 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
      ```
 
 2. **Pagar cita:** `POST /appointments/pay/:id`
-   - Permite a un paciente pagar una cita y confirmar su asistencia.
+   - Permite a un paciente pagar una cita utilizando Stripe.
    - **Requiere token JWT**.
    - **Parámetros de ruta:**
      - `id`: ID de la cita a pagar.
@@ -225,27 +229,12 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
      }
      ```
 
-6. **Cancelar cita:** `DELETE /appointments/cancel/:id`
-   - Permite a un usuario cancelar una cita programada.
-   - **Requiere token JWT**.
-   - **Parámetros de ruta:**
-     - `id`: ID de la cita a cancelar.
-   - **Respuesta esperada:**
-     ```json
-     {
-       "message": "Cita cancelada exitosamente",
-       "appointment": {
-         "id": "appointment123",
-         "status": "cancelled"
-       }
-     }
-     
-
 ---
 
 ## Pruebas
 
 Ejecuta las pruebas unitarias:
+
 ```bash
 npm test
 ```
@@ -257,61 +246,3 @@ Las pruebas incluyen:
 
 ---
 
-## Estructura del Proyecto
-
-```
-src/
-├── app.js             # Configuración principal de la app
-├── models/            # Modelos Mongoose
-│   ├── User.js        # Modelo de Usuario
-│   ├── Appointment.js # Modelo de Cita
-├── routes/            # Rutas de la API
-│   ├── auth.js        # Rutas de autenticación
-│   ├── appointments.js # Rutas de citas
-├── controllers/       # Controladores
-│   ├── AuthController.js # Lógica de autenticación
-│   ├── AppointmentController.js # Lógica de citas
-├── middlewares/       # Middlewares personalizados
-│   ├── auth.js        # Middleware para JWT y roles
-├── scripts/           # Scripts de inicialización
-│   ├── initializeDatabase.js # Script para crear la base de datos
-├── tests/             # Pruebas unitarias
-│   ├── appointments.test.js # Pruebas para las citas
-├── swagger.json       # Definición de la API para Swagger
-```
-
----
-
-## Script de Inicialización de la Base de Datos
-
-El script `initializeDatabase.js` configura la base de datos y añade datos iniciales para facilitar las pruebas.
-
-1. Define los esquemas y modelos de MongoDB.
-2. Limpia las colecciones existentes para evitar duplicados.
-3. Inserta datos iniciales:
-   - Usuarios (`doctor` y `patient`).
-   - Citas con horarios predefinidos.
-
-Ejecuta el script:
-```bash
-node scripts/initializeDatabase.js
-```
-
----
-
-## Contribuciones
-
-Si deseas contribuir:
-
-1. Haz un fork del repositorio.
-2. Crea una rama para tu feature:
-   ```bash
-   git checkout -b feature/nombre-feature
-   ```
-3. Realiza tus cambios y envía un pull request.
-
----
-
-## Licencia
-
-Este proyecto está bajo la licencia **MIT**.
