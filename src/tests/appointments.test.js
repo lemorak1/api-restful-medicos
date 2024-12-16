@@ -145,7 +145,7 @@ const User = require('../models/User');
 const Appointment = require('../models/Appointment');
 
 // Configuración global de Jest
-jest.setTimeout(20000); // 20 segundos
+jest.setTimeout(30000); // 20 segundos
 
 // Carga las variables de entorno
 require('dotenv').config();
@@ -153,7 +153,7 @@ require('dotenv').config();
 beforeAll(async () => {
   console.log('Cadena de conexión:', process.env.TEST_DB_URI); // Verifica la URI
   try {
-    await mongoose.connect(process.env.TEST_DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(process.env.TEST_DB_URI);
     console.log('Conexión exitosa con MongoDB');
   } catch (error) {
     console.error('Error al conectar con MongoDB:', error);

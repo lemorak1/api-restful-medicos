@@ -1,22 +1,16 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
-
-// Habilitar el modo de depuración de Mongoose
-mongoose.set('debug', true);
-
-(async () => {
-  const uri = process.env.TEST_DB_URI;
-
+const uri = "mongodb+srv://test:PRUEBAmedicos1@cluster1.m32tb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1";
+const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
+async function run() {
   try {
-    console.log('Intentando conectar a:', uri);
-    await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 5000, // Tiempo máximo para conectar
-    });
-    console.log('Conexión exitosa a MongoDB');
-    await mongoose.connection.close();
-    console.log('Conexión cerrada correctamente');
-  } catch (error) {
-    console.error('Error al conectar con MongoDB:', error.message);
-    console.error(error); // Detalles completos del error
+    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
+    await mongoose.connect(uri, clientOptions);
+    console.log("Paso la conexion?")
+    await mongoose.connection.db.admin().command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await mongoose.disconnect();
   }
-})();
+}
+run().catch(console.dir);
