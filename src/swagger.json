@@ -1,0 +1,41 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API Restful Simple",
+      "version": "1.0.0",
+      "description": "Documentación de la API Restful Simple"
+    },
+    "paths": {
+      "/appointments/create": {
+        "post": {
+          "summary": "Crear una nueva cita médica",
+          "tags": ["Appointments"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "doctor": { "type": "string" },
+                    "date": { "type": "string", "format": "date" },
+                    "time": { "type": "string" }
+                  },
+                  "required": ["doctor", "date", "time"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Cita creada exitosamente"
+            },
+            "400": {
+              "description": "Error de validación"
+            }
+          }
+        }
+      }
+    }
+  }
+  
