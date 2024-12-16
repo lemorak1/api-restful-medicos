@@ -80,15 +80,7 @@ exports.confirm = async (req, res) => {
   }
 };
 
-// exports.list = async (req, res) => {
-//   try {
-//     const appointments = await Appointment.find({ doctor: req.user.id, date: new Date().toISOString().split('T')[0] });
 
-//     res.status(200).json(appointments);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error al listar las citas', error });
-//   }
-// };
 exports.list = async (req, res) => {
     try {
       // Obtenemos el ID del médico desde el token
@@ -181,3 +173,43 @@ if (new Date(date) < new Date()) {
       res.status(500).json({ message: 'Error al obtener el historial de citas', error });
     }
   };
+
+
+exports.processPayment = async (req, res) => {
+  const { id } = req.params;
+  const { amount, currency, paymentMethodId } = req.body;
+
+  try {
+    // Verificar que la cita existe
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    // Verificar que la cita pertenece al paciente autenticado
+    if (appointment.patient.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'No tienes permiso para pagar esta cita' });
+    }
+
+    // Crear un intento de pago en Stripe
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount, // Monto en centavos (1000 = 10.00 USD)
+      currency,
+      payment_method: paymentMethodId,
+      confirm: true,
+    });
+
+    // Actualizar los detalles de pago en la cita
+    appointment.status = 'Pagada';
+    appointment.paymentDetails = {
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+    };
+    await appointment.save();
+
+    res.status(200).json({ message: 'Pago exitoso', appointment });
+  } catch (error) {
+    res.status(400).json({ message: 'Error en el pago', error: error.message });
+  }
+};

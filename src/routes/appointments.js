@@ -7,7 +7,9 @@ const { isAuthenticated, isRole } = require('../middlewares/auth');
 router.post('/create', isAuthenticated, isRole('Paciente'), AppointmentController.create);
 
 // Pagar cita (Paciente)
-router.post('/pay/:id', isAuthenticated, isRole('Paciente'), AppointmentController.pay);
+// router.post('/pay/:id', isAuthenticated, isRole('Paciente'), AppointmentController.pay);
+router.post('/pay/:id', isAuthenticated, isRole('Paciente'), AppointmentController.processPayment);
+
 
 // Confirmar cita (Médico)
 router.post('/confirm/:id', isAuthenticated, isRole('Médico'), AppointmentController.confirm);
@@ -23,5 +25,6 @@ router.delete('/cancel/:id', isAuthenticated, AppointmentController.cancel);
 
 // Historial de citas (con filtros)
 router.get('/history', isAuthenticated, isRole('Paciente'), AppointmentController.history);
+
 
 module.exports = router;
