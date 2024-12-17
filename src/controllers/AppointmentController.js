@@ -2,6 +2,7 @@ const Appointment = require('../models/Appointment');
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const jwt = require('jsonwebtoken');
+
 exports.create = async (req, res) => {
   try {
     const { doctor, date, time } = req.body;
@@ -225,7 +226,6 @@ exports.processPayment = async (req, res) => {
   }
 };
 
-const Appointment = require('../models/Appointment');
 
 exports.rejectAppointment = async (req, res) => {
   const { id } = req.params;
