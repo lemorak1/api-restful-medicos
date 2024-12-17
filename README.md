@@ -28,7 +28,7 @@ Esta API permite gestionar citas médicas entre pacientes y médicos, proporcion
 
 ### **Pruebas Unitarias**
 - Cobertura de casos principales (éxito y errores).
-- Pruebas de creación, pago, cancelación, confirmación, rechazo y listado de citas.
+- Pruebas de creación, pago, cancelación y rechazo de citas.
 
 ---
 
@@ -230,8 +230,5 @@ npm test
 5. **Cancelación de citas:** Valida que pacientes y médicos puedan cancelar citas pendientes.
 6. **Listado de citas del día:** Verifica que el médico pueda ver las citas programadas para el día actual.
 
+
 ---
-
-## **Licencia**
-
-Este proyecto está bajo la licencia MIT.
