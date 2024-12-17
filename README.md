@@ -96,7 +96,7 @@ PORT=3000
    - Ejecuta el script de inicialización de la base de datos:
 
      ```bash
-     node scripts/initializeDatabase.js
+     node src/scripts/initializeDatabase.js
      ```
 
 ---
