@@ -9,10 +9,7 @@ const Appointment = require('../models/Appointment');
 // Carga las variables de entorno
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.TEST_DB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await mongoose.connect(process.env.TEST_DB_URI);
 });
 
 afterAll(async () => {
