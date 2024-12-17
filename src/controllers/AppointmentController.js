@@ -14,7 +14,7 @@ exports.create = async (req, res) => {
     }
 
     // Validar que no exista una cita en el mismo horario
-    const existingAppointment = await Appointment.findOne({ doctor, date, time });
+    const existingAppointment = await Appointment.findOne({ doctor, date , time });
     if (existingAppointment) {
       return res.status(400).json({ message: 'El horario ya está ocupado' });
     }
