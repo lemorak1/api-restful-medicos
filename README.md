@@ -319,6 +319,15 @@ A continuación, se listan los endpoints principales con ejemplos de uso. Alguno
     }
   }
   ```
+  ### **Rechazar una Cita**
+
+- **Endpoint:** `POST /appointments/reject/:id`
+- **Descripción:** Permite que un médico rechace una cita específica.
+- **Headers:**
+  ```json
+  {
+    "Authorization": "Bearer <jwt_token_medico>"
+  }
 ---
 
 ## Pruebas

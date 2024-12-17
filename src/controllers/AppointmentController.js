@@ -225,3 +225,34 @@ exports.processPayment = async (req, res) => {
   }
 };
 
+const Appointment = require('../models/Appointment');
+
+exports.rejectAppointment = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Buscar la cita por ID
+    const appointment = await Appointment.findById(id);
+    if (!appointment) {
+      return res.status(404).json({ message: 'Cita no encontrada' });
+    }
+
+    // Verificar que la cita pertenece al médico autenticado
+    if (appointment.doctor.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'No tienes permiso para rechazar esta cita' });
+    }
+
+    // Verificar el estado de la cita
+    if (appointment.status === 'Confirmada') {
+      return res.status(400).json({ message: 'No se puede rechazar una cita ya confirmada' });
+    }
+
+    // Actualizar el estado a "Rechazada"
+    appointment.status = 'Rechazada';
+    await appointment.save();
+
+    res.status(200).json({ message: 'Cita rechazada exitosamente', appointment });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al rechazar la cita', error: error.message });
+  }
+};

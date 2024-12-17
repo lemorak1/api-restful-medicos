@@ -14,6 +14,9 @@ router.post('/pay/:id', isAuthenticated, isRole('Paciente'), AppointmentControll
 // Confirmar cita (Médico)
 router.post('/confirm/:id', isAuthenticated, isRole('Médico'), AppointmentController.confirm);
 
+// Rechazar cita (Médico)
+router.post('/reject/:id', isAuthenticated, isRole('Médico'), AppointmentController.rejectAppointment);
+
 // Listar citas del día (Médico)
 router.get('/list', isAuthenticated, isRole('Médico'), AppointmentController.list);
 
