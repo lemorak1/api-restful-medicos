@@ -98,7 +98,18 @@ PORT=3000
      ```bash
      node src/scripts/initializeDatabase.js
      ```
+4. Inicializa el proyecto:
 
+   - Ejecuta el script de inicialización del proyecto:
+
+     ```bash
+     npm start
+     ```
+      - Tambien peudes ejecutarlo como dev:
+
+     ```bash
+     npm run dev
+     ```
 ---
 
 ## Uso
