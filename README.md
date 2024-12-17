@@ -24,6 +24,15 @@ Esta API permite gestionar citas médicas entre pacientes y médicos, proporcion
 - Verificación de horarios ocupados.
 - Restricciones para acciones específicas según el estado de la cita.
 - Validación de acceso según rol del usuario.
+- Validación del formato de la hora (`HH:mm`).
+- Restricción para fechas y horas pasadas.
+
+## Mejoras y Funcionalidades Adicionales
+
+- Validación del formato de la hora (`HH:mm`).
+- Restricción de fechas pasadas para la creación de citas.
+- Manejo de respuestas de error detalladas.
+- Pruebas unitarias para cada funcionalidad clave.
 
 ### Documentación interactiva:
 - Disponible con Swagger en `http://localhost:3000/api-docs`.
@@ -350,4 +359,6 @@ Las pruebas incluyen:
 
 
 ---
+
+
 
