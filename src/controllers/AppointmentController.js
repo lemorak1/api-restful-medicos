@@ -2,7 +2,6 @@ const Appointment = require('../models/Appointment');
 const Stripe = require('stripe');
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || ''); // Manejar valor nulo
 const jwt = require('jsonwebtoken');
-const rare
 
 exports.create = async (req, res) => {
   try {
