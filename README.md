@@ -74,16 +74,6 @@ PORT=3000
 
 Reemplaza `<username>`, `<password>`, `your_stripe_secret_key` y `your_stripe_public_key`  con tus credenciales de MongoDB y Stripe.
 
-Para propositos de prueba en un ambiente de base de datos local y una pasarela de pagos con ambiente sandbox, se ha usado el siguiente .env
-
-```env
-DB_URI=mongodb://localhost:27017/medical_appointments
-TEST_DB_URI=mongodb://localhost:27017/medical_appointments_test
-JWT_SECRET=mysecretkey
-STRIPE_SECRET_KEY=sk_test_51QWfCSK2EIZcmE0KDDH3bhPLErxvRQ4lRjWZstaJoaZZ6klhiG9GaM2XrzwV0F0Gl78PFNgaQxq4eeG5KtTYiDO600lvY2F7hW
-STRIPE_PUBLIC_KEY=pk_test_51QWfCSK2EIZcmE0KNv6BiaU8CbwDcqWethBOqizdSU3r17xjjj8MQiMF2heKi9Qcwq3JRzdiMe2gGXzzdNFvny1t00RZk2kihH
-PORT=3000
-```
 ---
 
 ## Instalación
